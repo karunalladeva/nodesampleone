@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -18,7 +19,7 @@ app.use(helmet());
 
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var dev_db_url = 'mongodb://cooluser:coolpassword@ds119748.mlab.com:19748/local_library'
+var dev_db_url = 'mongodb://admin:admin123@ds249128.mlab.com:49128/locallib'
 var mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
@@ -36,6 +37,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+    secret: '2C44-4D44-WppQ38S-deva',
+    resave: true,
+    saveUninitialized: true,
+}));
 
 app.use(compression()); // Compress all routes
 

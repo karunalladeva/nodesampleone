@@ -14,6 +14,17 @@ html(lang='en')
         div(class='col-sm-2')
           block sidebar
             ul(class='sidebar-nav')
+          if  user_status == false
+              li
+                a(href='/users/signup') Signup
+              li
+                a(href='/users/signin') Signin
+          else
+              li
+                a(href='/users/edit') #{user_status}
+              li
+                a(href='/users/logout') Logout
+                hr                
               li 
                 a(href='/catalog') Home
               li 

@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1=title
+  
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
+
+  form(method='POST' action='/users/signup')
+    div.form-group
+      label(for='first_name') First Name:
+      input#first_name.form-control(type='text', placeholder='First name (Christian) last' name='first_name' required='true' value=(undefined===author ? '' : author.first_name) )
+      label(for='family_name') Family Name:
+      input#family_name.form-control(type='text', placeholder='Family name (surname)' name='family_name' required='true' value=(undefined===author ? '' : author.family_name))
+    div.form-group
+      label(for='email') Email:
+      input#email.form-control(type='email', name='email' value=(undefined===author ? '' : author.email) )
+    div.form-group
+      label(for='password') Password:
+      input#password.form-control(type='password', name='password' value=(undefined===author ? '' : author.password) )
+    button.btn.btn-primary(type='submit') Submit
+
+  
