@@ -16,5 +16,14 @@ router.post('/signin',user_controller.signin);
 router.get('/signin', function(req, res, next) {
   res.render('login',{user_status : req.session.user || false } );
 });
+router.get('/forgetpassword', function(req, res, next) {
+  res.render('forgetmail',{user_status : req.session.user || false } );
+});
+router.post('/forgetpassword',user_controller.forgetpassword);
+
+router.get('/setpassword/:id', function(req, res, next) {
+  res.render('setpassword',{user_status : req.session.user || false } );
+});
+router.post('/setpassword/:id',user_controller.resetpassword);
 
 module.exports = router;

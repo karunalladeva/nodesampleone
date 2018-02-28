@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var flash = require('connect-flash');
+
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -47,6 +49,8 @@ app.use(compression()); // Compress all routes
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(flash());
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/catalog', catalog); // Add catalog routes to middleware chain.
@@ -61,6 +65,8 @@ app.use(function(req, res, next) {
 // Error handler
 app.use(function(err, req, res, next) {
   // Set locals, only providing error in development
+  res.locals.sucess_msg=req.flash('sucess_msg');
+  res.locals.err_msg=req.flash('err_msg');
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
