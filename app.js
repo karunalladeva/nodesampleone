@@ -68,7 +68,7 @@ function extractProfile (profile) {
 passport.use(new GoogleStrategy({
   clientID: '988007128942-0a4j4m36rn1cviio7bo2crapbd948iue.apps.googleusercontent.com',
   clientSecret: 'BBSWRuBFkqgvH-bOodUjfJXm',
-  callbackURL: 'http://localhost:3000/auth/callback/google',
+  callbackURL: 'https://nodesampleone.herokuapp.com/auth/callback/google',
   accessType: 'offline'
 }, (accessToken, refreshToken, profile, cb) => {
   cb(null, extractProfile(profile));
@@ -83,7 +83,7 @@ passport.deserializeUser((obj, cb) => {
 passport.use(new FacebookStrategy({
     clientID: '119759488713668',
     clientSecret: 'f38e8632d7ad05bf5ac73ea07801ee79',
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    callbackURL: "https://nodesampleone.herokuapp.com/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
     cb(null, profile);
