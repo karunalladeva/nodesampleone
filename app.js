@@ -6,7 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
-
+var passport= require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -16,7 +19,6 @@ var helmet = require('helmet');
 
 // Create the Express application object
 var app = express();
-
 app.use(helmet());
 
 // Set up mongoose connection
@@ -47,6 +49,64 @@ app.use(session({
 
 app.use(compression()); // Compress all routes
 
+var User = require('./models/user')
+var async = require('async')
+
+function extractProfile (profile) {
+  let imageUrl = '';
+  if (profile.photos && profile.photos.length) {
+    imageUrl = profile.photos[0].value;
+  }
+  return {
+    googleid: profile.id,
+    first_name: profile.name.givenName,
+    family_name : profile.name.familyName,
+    image: imageUrl,
+    email: profile.emails[0].value
+  };
+}
+passport.use(new GoogleStrategy({
+  clientID: '988007128942-0a4j4m36rn1cviio7bo2crapbd948iue.apps.googleusercontent.com',
+  clientSecret: 'BBSWRuBFkqgvH-bOodUjfJXm',
+  callbackURL: 'http://localhost:3000/auth/callback/google',
+  accessType: 'offline'
+}, (accessToken, refreshToken, profile, cb) => {
+  cb(null, extractProfile(profile));
+}));
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+passport.deserializeUser((obj, cb) => {
+  cb(null, obj);
+});
+
+passport.use(new FacebookStrategy({
+    clientID: '119759488713668',
+    clientSecret: 'f38e8632d7ad05bf5ac73ea07801ee79',
+    callbackURL: "http://localhost:3000/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    cb(null, profile);
+  }
+));
+
+passport.use(new LocalStrategy(
+  function(email, password, done) {
+    User.findOne({ email : email ,password : password }, function (err, user) {
+      if (err) { return done(err); }
+      // if (!user) {
+      //   return done(null, false, { message: 'Incorrect username.' });
+      // }
+      // if (!user.validPassword(password)) {
+      //   return done(null, false, { message: 'Incorrect password.' });
+      // }
+      return done(null, user);
+    });
+  }
+));
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(flash());

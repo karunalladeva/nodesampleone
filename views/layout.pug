@@ -8,25 +8,33 @@ html(lang='en')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src="https://use.fontawesome.com/releases/v5.0.8/js/all.js")
+    script(src="../javascript/index.js")
+
+
   body
-    div(class='container-fluid')
-      div(class='row')
-        div(class='col-sm-2')
-          block sidebar
-            ul(class='sidebar-nav')
-          if  user_status == false
-              li
-                a(href='/users/signup') Signup
-              li
-                a(href='/users/signin') Signin
-          else
-              li
-                a(href='/users/edit') #{user_status}
-              li
-                a(href='/users/logout') Logout
-                hr                
-              li 
-                a(href='/catalog') Home
+  div(class='container-fluid header')
+    
+    .navbar-collapse.collapse
+      ul.nav.navbar-nav  
+        if  user_status == false
+          li.right
+            a(href='/users/signup') Signup
+          li.right
+            a(href='/users/signin') Signin
+        else
+          li.right
+            a(href='/users/edit') #{user_status}
+          li.right
+            a(href='/users/logout') Logout
+          li 
+            a(href='/catalog') Home
+
+          li.dropdown
+            a.dropdown-toggle(href='#', data-toggle='dropdown')
+              | Find Things 
+              span.caret
+            ul.dropdown-menu(role='menu')   
               li 
                 a(href='/catalog/books') All books
               li 
@@ -35,8 +43,11 @@ html(lang='en')
                 a(href='/catalog/genres') All genres
               li 
                 a(href='/catalog/bookinstances') All book-instances
-              li 
-                hr
+          li.dropdown
+            a.dropdown-toggle(href='#', data-toggle='dropdown')
+              | Make Things 
+              span.caret
+            ul.dropdown-menu(role='menu') 
               li 
                 a(href='/catalog/author/create') Create new author
               li 
@@ -46,6 +57,6 @@ html(lang='en')
               li 
                 a(href='/catalog/bookinstance/create') Create new book instance (copy)
                 
-        div(class='col-sm-10')
+  div(class='col-sm-10 main')
          
           block content

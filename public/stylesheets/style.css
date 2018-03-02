@@ -3,3 +3,39 @@
     padding: 0;
     list-style: none;
 }
+a.forgetpass {
+    float: right;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+.col-sm-10.main {
+    width: 40%;
+    /* padding: 8%; */
+    margin: 0 auto;
+    float: none;
+}
+ul.nav.navbar-nav {
+    width: 100%;
+}
+.header {
+    background: #cccccc;
+}
+li.right {
+    float: right;
+}
+.squre_box {
+    display: inline-block;
+    margin-left: 10px;
+    border: 1px solid;
+    border-radius: 1em;
+    width: 7%;
+    padding: 8px 0px 5px 12px;
+}
+.squre_box.fb {
+    background: #3b5998;
+    color: white;
+}
+.squre_box.google {
+    background: #ea3f31;
+    color: white;
+}

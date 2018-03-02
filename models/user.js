@@ -6,9 +6,11 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema(
     {
     first_name: {type: String, required: true, max: 100},
-    family_name: {type: String, required: true, max: 100},
+    family_name: {type: String, max: 100},
     email: { type: String },
     password : { type: String },
+    googleId : { type: String },
+    facebookid: { type: String },
     }
   );
 
@@ -16,7 +18,7 @@ var UserSchema = new Schema(
 UserSchema
 .virtual('name')
 .get(function () {
-  return this.family_name +', '+this.first_name;
+  return this.first_name;
 });
 
 // Virtual for this author instance URL.

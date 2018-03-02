@@ -2,6 +2,7 @@ var User = require('../models/user')
 var async = require('async')
 var nodemailer = require('nodemailer');
 
+
 // Display User create form on GET.
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -19,8 +20,8 @@ exports.user_create_post = [
     body('family_name').isLength({ min: 1 }).trim().withMessage('Family name must be specified.')
         .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
     body('email').isEmail().trim().withMessage('Invalid Email.'),
-    body('password').isLength({ min: 8 }).trim().withMessage('Invalid Email.')
-        .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password length must be 8+.')
+        .isAlphanumeric().withMessage('Password has non-alphanumeric characters.'),
 
     // Sanitize fields.
     sanitizeBody('first_name').trim().escape(),
@@ -107,8 +108,8 @@ exports.edit = [
     body('family_name').isLength({ min: 1 }).trim().withMessage('Family name must be specified.')
         .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
     body('email').isEmail().trim().withMessage('Invalid Email.'),
-    body('password').isLength({ min: 8 }).trim().withMessage('Invalid Email.')
-        .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password length must be 8+.')
+        .isAlphanumeric().withMessage('Password has non-alphanumeric characters.'),
 
     // Sanitize fields.
     sanitizeBody('first_name').trim().escape(),
@@ -184,7 +185,7 @@ exports.signin = function (req, res, next) {
                 return;
             }else
             {          
-                res.render('login',{user_status : req.session.user || false } );
+                res.render('login',{title: 'Signin',user_status : req.session.user || false } );
             }
     });
 };
@@ -212,14 +213,14 @@ exports.forgetpassword = function (req, res, next) {
                 User.findOneAndUpdate({'email':req.body.email}, {$set:{password:"reset"}}, {}, function (err, theuser) {
                     if (err) { return next(err); }
                     // Successful - redirect to genre detail page.
-                    res.render('login',{user_status : req.session.user || false } );
+                    res.render('login',{title: 'Signin',user_status : req.session.user || false } );
                 });
                 // res.render('login',{user_status : req.session.user || false } );
               }
             }); 
         }else
         {          
-            res.render('login',{user_status : req.session.user || false } );
+            res.render('login',{title: 'Signin',user_status : req.session.user || false } );
         }
     });
     
@@ -228,8 +229,8 @@ exports.forgetpassword = function (req, res, next) {
 exports.resetpassword = [ 
 body('password').isLength({ min: 8 }).trim().withMessage('Invalid Email.')
         .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
-body('repassword').isLength({ min: 8 }).trim().withMessage('Invalid Email.')
-        .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),        
+body('repassword').isLength({ min: 8 }).trim().withMessage('Password length must be 8+.')
+        .isAlphanumeric().withMessage('Password has non-alphanumeric characters.'),        
 
 sanitizeBody('password').trim().escape(),
 sanitizeBody('password').trim().escape(),
@@ -253,7 +254,7 @@ sanitizeBody('password').trim().escape(),
                 User.findByIdAndUpdate(req.params.id, {$set:{password:req.body.password}}, {}, function (err, theuser) {
                     if (err) { return next(err); }
                     // Successful - redirect to genre detail page.
-                    res.render('login',{user_status : req.session.user || false ,sucess_msg: req.flash('Updated Successful')} );
+                    res.render('login',{title: 'Signin',user_status : req.session.user || false ,sucess_msg: req.flash('Updated Successful')} );
                 });
                }else{
                 
@@ -272,6 +273,81 @@ transporter = nodemailer.createTransport({
     pass: 'Kd551355122!'
   }
 });
+
+exports.googledata = (req, res,next)=>{
+ console.log(req.session.passport.user);
+    async.parallel({
+                    
+        user: function (callback) {
+            User.find({ 'email': req.session.passport.user.email})
+                .exec(callback)
+                },
+            }, function (err, results) {
+            if (err) { return (err); }       
+            if(0 < results.user.length){
+                req.session.user =results.user[0].name;
+                req.session.email =results.user[0].email;
+                res.redirect('/catalog')
+                return;
+            }else
+            {          
+                   var users = new User(
+                {
+                    first_name: req.session.passport.user.first_name,
+                    family_name: req.session.passport.user.family_name,
+                    email: req.session.passport.user.email,
+                    password: req.session.passport.user.googleid,
+                    googleid:req.session.passport.user.googleid
+                });
+                    users.save(function (err) {
+                        if (err) { return next(err); }
+                        // Successful - redirect to new author record.
+                        req.session.user =users.name;
+                        req.session.email =users.Email;
+                        res.redirect('/catalog');
+                    }); 
+                // res.render('login',{title: 'Signin',user_status : req.session.user || false } );
+            }
+    });
+}
+
+exports.facebookdata = (req, res,next)=>{
+ console.log(req.session.passport.user);
+    async.parallel({
+                    
+        user: function (callback) {
+            User.find({ 'email': req.session.passport.user.id+'@mail.com'})
+                .exec(callback)
+                },
+            }, function (err, results) {
+            if (err) { return (err); }       
+            if(0 < results.user.length){
+                req.session.user =results.user[0].name;
+                req.session.email =results.user[0].email;
+                res.redirect('/catalog')
+                return;
+            }else
+            {          
+                   var users = new User(
+                {
+                    first_name: req.session.passport.user.displayName,
+                    family_name: req.session.passport.user.name.familyName || "",
+                    email: req.session.passport.user.id+'@mail.com',
+                    password: req.session.passport.user.id,
+                    facebookid:req.session.passport.user.id,
+                    googleid: ""
+                });
+                    users.save(function (err) {
+                        if (err) { return next(err); }
+                        // Successful - redirect to new author record.
+                        req.session.user =users.name;
+                        req.session.email =users.Email;
+                        res.redirect('/catalog');
+                    }); 
+                // res.render('login',{title: 'Signin',user_status : req.session.user || false } );
+            }
+    });
+}
 
 exports.logout = function (req, res, next) { 
 req.session.destroy();
