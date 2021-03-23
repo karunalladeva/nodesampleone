@@ -1,4 +1,4 @@
-# express-locallibrary -0.01
+# express-locallibrary -0.02
 "Local Library" website written in in Node/Express.
 
 ----
