@@ -10,7 +10,7 @@
     "devstart": "nodemon ./bin/www"
   },
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.4",
     "body-parser": "~1.18.2",
     "compression": "^1.7.1",
     "connect-flash": "^0.1.1",
